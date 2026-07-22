@@ -1461,25 +1461,19 @@ local function Atr_FullScanProcessYield (index)
 
 end
 
-local function Atr_FullScanUnitPrice (count, buyoutPrice, minBid, bidAmount)
+local function Atr_FullScanUnitPrice (count, buyoutPrice)
 
 	count = tonumber (count) or 1;
 	if (count < 1) then
 		count = 1;
 	end
 
-	local price = buyoutPrice;
-	if (price == nil or price <= 0) then
-		price = minBid;
-	end
-	if (price == nil or price <= 0) then
-		price = bidAmount;
-	end
-	if (price == nil or price <= 0) then
+	-- Only buyout counts (same as original Auctionator). Bid-only lots must not pollute the DB.
+	if (buyoutPrice == nil or buyoutPrice <= 0) then
 		return nil;
 	end
 
-	return math.floor (price / count);
+	return math.floor (buyoutPrice / count);
 
 end
 
@@ -1541,7 +1535,7 @@ local function Atr_FullScanRecordAuction (lowprices, qualities, name, count, qua
 
 	quality = tonumber (quality) or 0;
 
-	local itemPrice = Atr_FullScanUnitPrice (count, buyoutPrice, minBid, bidAmount);
+	local itemPrice = Atr_FullScanUnitPrice (count, buyoutPrice);
 	if (not itemPrice or itemPrice <= 0) then
 		return;
 	end
